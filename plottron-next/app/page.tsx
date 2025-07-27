@@ -1,17 +1,13 @@
-import Navbar from '@/components/Navbar';
-import HeroCollage from '@/components/HeroCollage';
-import WorksSection from '@/components/WorksSection';
-import CreatorsSection from '@/components/CreatorsSection';
-import Footer from '@/components/Footer';
+import Header from '@/components/Header'
+import InfiniteCanvas from '@/components/InfiniteCanvas'
+import { canvasData } from '@/data/canvasData'
+import '@/styles/infinite-canvas.css'
 
 export default function Home() {
   return (
-    <>
-      <Navbar />
-      <HeroCollage />
-      <WorksSection />
-      <CreatorsSection />
-      <Footer />
-    </>
-  );
+    <main className="infinite-canvas-page">
+      <Header />
+      <InfiniteCanvas items={canvasData} />
+    </main>
+  )
 }
