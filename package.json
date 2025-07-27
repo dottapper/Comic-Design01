@@ -1,0 +1,33 @@
+{
+  "name": "plottron-comic-site",
+  "version": "1.0.0",
+  "description": "A minimalist comic site with animated logo and hero image gallery",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "npx http-server -p 8000 -o",
+    "build": "echo 'Static site - no build process needed'",
+    "lint": "echo 'No linting configured'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "comic",
+    "anime",
+    "plottron",
+    "static-site",
+    "logo-animation",
+    "gallery"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
