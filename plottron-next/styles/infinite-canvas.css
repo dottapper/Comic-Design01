@@ -445,8 +445,66 @@
   font-weight: 600;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Responsive Design - Enhanced */
+
+/* Desktop Large (1440px+) */
+@media (min-width: 1440px) {
+  .canvas-navigation {
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+  }
+  
+  .zoom-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+  
+  .modal-body {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Desktop Small (1024px - 1439px) */
+@media (max-width: 1439px) and (min-width: 1024px) {
+  .canvas-navigation {
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 769px) {
+  .infinite-canvas-container {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--color-primary-light) 50%, var(--bg-primary) 100%);
+  }
+  
+  .modal-body {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+  }
+  
+  .canvas-navigation {
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .zoom-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+  }
+  
+  .navigation-hint {
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile Large (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
   .modal-body {
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
@@ -464,11 +522,19 @@
   .canvas-navigation {
     bottom: var(--spacing-md);
     right: var(--spacing-md);
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-sm);
   }
   
   .navigation-hint {
     font-size: 0.8rem;
     padding: var(--spacing-xs) var(--spacing-sm);
+    display: none; /* モバイルでは非表示 */
+  }
+  
+  .zoom-controls {
+    flex-direction: row;
   }
   
   .zoom-btn {
@@ -480,27 +546,145 @@
   .header-content {
     flex-direction: column;
     gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
   }
   
   .logo {
     font-size: 1.2rem;
   }
+  
+  .nav-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .control-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
 }
 
+/* Mobile Small (320px - 480px) */
 @media (max-width: 480px) {
+  .infinite-canvas-container {
+    /* モバイル用シンプルな背景 */
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--color-primary-dark) 100%);
+  }
+  
   .modal-content {
     max-width: 95vw;
     max-height: 95vh;
+    border-radius: var(--radius-lg);
   }
   
   .modal-body {
     padding: var(--spacing-md);
+    gap: var(--spacing-sm);
   }
   
   .modal-close {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+  
+  .modal-title {
+    font-size: 1.3rem;
+    line-height: 1.3;
+  }
+  
+  .modal-author {
+    font-size: 1rem;
+  }
+  
+  .modal-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .canvas-navigation {
+    bottom: var(--spacing-sm);
+    right: var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+  
+  .navigation-hint {
+    display: none;
+  }
+  
+  .zoom-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  
+  .header-content {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+  
+  .logo {
+    font-size: 1.1rem;
+  }
+  
+  .navigation {
+    gap: var(--spacing-xs);
+  }
+  
+  .nav-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .control-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  
+  .header-controls {
+    gap: 0.25rem;
+  }
+}
+
+/* Orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .canvas-navigation {
+    flex-direction: row;
+    bottom: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+  
+  .modal-body {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+  .modal-body {
+    max-width: 1400px;
+    padding: var(--spacing-xl);
+  }
+  
+  .canvas-navigation {
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+  }
+  
+  .zoom-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
   }
 }
 

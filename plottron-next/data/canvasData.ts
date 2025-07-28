@@ -232,6 +232,58 @@ export const canvasData: CanvasItem[] = [
   }
 ]
 
+// レスポンシブ対応のビューポート計算ユーティリティ
+export function getViewportDimensions() {
+  if (typeof window === 'undefined') {
+    return { width: 1200, height: 800 } // SSR デフォルト値
+  }
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight
+  }
+}
+
+// デバイスタイプ判定
+export function getDeviceType() {
+  const { width } = getViewportDimensions()
+  if (width <= 480) return 'mobile'
+  if (width <= 768) return 'tablet'
+  if (width <= 1024) return 'desktop-small'
+  return 'desktop'
+}
+
+// レスポンシブキャンバスサイズ計算
+export function getResponsiveCanvasSize() {
+  const { width, height } = getViewportDimensions()
+  const deviceType = getDeviceType()
+  
+  switch (deviceType) {
+    case 'mobile':
+      return { width: width * 2.5, height: height * 3 }
+    case 'tablet':
+      return { width: width * 3, height: height * 2.5 }
+    case 'desktop-small':
+      return { width: width * 2.5, height: height * 2 }
+    default:
+      return { width: 4000, height: 3000 }
+  }
+}
+
+// レスポンシブ座標変換
+export function convertToResponsivePosition(
+  originalX: number, 
+  originalY: number, 
+  originalCanvasWidth = 4000, 
+  originalCanvasHeight = 3000
+) {
+  const { width: newWidth, height: newHeight } = getResponsiveCanvasSize()
+  
+  return {
+    x: (originalX / originalCanvasWidth) * newWidth,
+    y: (originalY / originalCanvasHeight) * newHeight
+  }
+}
+
 // Utility functions for generating random positions and rotations
 export function generateRandomPosition(minX: number, maxX: number, minY: number, maxY: number) {
   return {
@@ -277,6 +329,44 @@ export function calculateCardSize(item: CanvasItem): { width: number; height: nu
   }
 }
 
+// レスポンシブグリッドシステム
+export function generateResponsiveGrid(items: CanvasItem[]): CanvasItem[] {
+  const deviceType = getDeviceType()
+  const canvasSize = getResponsiveCanvasSize()
+  
+  // デバイス別グリッド設定
+  const gridConfig = {
+    mobile: { columns: 2, rows: Math.ceil(items.length / 2), spacing: 50 },
+    tablet: { columns: 3, rows: Math.ceil(items.length / 3), spacing: 80 },
+    'desktop-small': { columns: 4, rows: Math.ceil(items.length / 4), spacing: 100 },
+    desktop: { columns: 5, rows: Math.ceil(items.length / 5), spacing: 120 }
+  }
+  
+  const config = gridConfig[deviceType as keyof typeof gridConfig] || gridConfig.desktop
+  const cellWidth = (canvasSize.width - config.spacing * (config.columns + 1)) / config.columns
+  const cellHeight = (canvasSize.height - config.spacing * (config.rows + 1)) / config.rows
+  
+  return items.map((item, index) => {
+    const col = index % config.columns
+    const row = Math.floor(index / config.columns)
+    
+    // グリッド位置計算（ランダムなオフセット付き）
+    const baseX = config.spacing + col * (cellWidth + config.spacing)
+    const baseY = config.spacing + row * (cellHeight + config.spacing)
+    
+    // 自然な配置のためのランダムオフセット
+    const offsetX = (Math.random() - 0.5) * (cellWidth * 0.3)
+    const offsetY = (Math.random() - 0.5) * (cellHeight * 0.3)
+    
+    return {
+      ...item,
+      x: baseX + offsetX,
+      y: baseY + offsetY,
+      rotation: generateRandomRotation()
+    }
+  })
+}
+
 export function generateDynamicItems(count: number): CanvasItem[] {
   const items: CanvasItem[] = []
   const titles = [
@@ -317,5 +407,6 @@ export function generateDynamicItems(count: number): CanvasItem[] {
     })
   }
   
-  return items
+  // レスポンシブグリッドを適用
+  return generateResponsiveGrid(items)
 } 

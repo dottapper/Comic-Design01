@@ -3,7 +3,14 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { motion, useMotionValue, PanInfo } from 'framer-motion'
-import { CanvasItem, calculateCardSize } from '@/data/canvasData'
+import { 
+  CanvasItem, 
+  calculateCardSize, 
+  getResponsiveCanvasSize, 
+  convertToResponsivePosition,
+  getDeviceType,
+  getViewportDimensions
+} from '@/data/canvasData'
 
 interface InfiniteCanvasProps {
   items: CanvasItem[]
@@ -17,6 +24,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   const canvasRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [selectedItem, setSelectedItem] = useState<CanvasItem | null>(null)
+  const [canvasSize, setCanvasSize] = useState({ width: 4000, height: 3000 })
+  const [deviceType, setDeviceType] = useState<string>('desktop')
   
   // パン用のモーション値
   const x = useMotionValue(0)
@@ -25,14 +34,29 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   // ズーム用のモーション値
   const scale = useMotionValue(1)
   
-  // キャンバスサイズ（実際のコンテンツエリア）
-  const canvasWidth = 4000
-  const canvasHeight = 3000
+  // レスポンシブキャンバスサイズの動的更新
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      const newSize = getResponsiveCanvasSize()
+      const newDeviceType = getDeviceType()
+      setCanvasSize(newSize)
+      setDeviceType(newDeviceType)
+    }
+    
+    updateCanvasSize()
+    window.addEventListener('resize', updateCanvasSize)
+    return () => window.removeEventListener('resize', updateCanvasSize)
+  }, [])
   
-  // メモ化されたアイテムレンダリング（縦横比対応）
+  // メモ化されたアイテムレンダリング（レスポンシブ対応）
   const renderedItems = useMemo(() => {
     return items.map((item) => {
       const cardSize = calculateCardSize(item)
+      const responsivePosition = convertToResponsivePosition(item.x, item.y)
+      
+      // デバイス別スケール調整
+      const deviceScale = deviceType === 'mobile' ? 0.8 : 
+                         deviceType === 'tablet' ? 0.9 : 1
       
       return (
         <motion.div
@@ -40,19 +64,23 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           className={`canvas-item ${item.size}`}
           style={{
             position: 'absolute',
-            left: item.x,
-            top: item.y,
-            transform: `rotate(${item.rotation}deg)`,
+            left: responsivePosition.x,
+            top: responsivePosition.y,
+            transform: `rotate(${item.rotation}deg) scale(${deviceScale})`,
             zIndex: item.size === 'large' ? 3 : item.size === 'medium' ? 2 : 1,
             // 動的に計算されたサイズを適用
             width: `${cardSize.width}px`,
             height: `${cardSize.height}px`
           }}
-          whileHover={{
+          whileHover={deviceType !== 'mobile' ? {
             scale: 1.05,
             rotate: 0,
             zIndex: 10,
             transition: { duration: 0.2 }
+          } : undefined}
+          whileTap={{
+            scale: deviceType === 'mobile' ? 1.02 : 1.05,
+            transition: { duration: 0.1 }
           }}
           onClick={(e) => {
             e.stopPropagation()
@@ -98,24 +126,25 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         </motion.div>
       )
     })
-  }, [items])
+  }, [items, deviceType])
   
   // パン処理の最適化
-  const handlePan = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handlePan = useCallback((_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (!isDragging) return
     
     const newX = x.get() + info.delta.x
     const newY = y.get() + info.delta.y
     
-    // キャンバス境界内に制限
-    const maxX = window.innerWidth * 0.5
-    const maxY = window.innerHeight * 0.5
-    const minX = -(canvasWidth - window.innerWidth * 0.5)
-    const minY = -(canvasHeight - window.innerHeight * 0.5)
+    // レスポンシブキャンバス境界内に制限
+    const viewport = getViewportDimensions()
+    const maxX = viewport.width * 0.5
+    const maxY = viewport.height * 0.5
+    const minX = -(canvasSize.width - viewport.width * 0.5)
+    const minY = -(canvasSize.height - viewport.height * 0.5)
     
     x.set(Math.max(minX, Math.min(maxX, newX)))
     y.set(Math.max(minY, Math.min(maxY, newY)))
-  }, [isDragging, x, y, canvasWidth, canvasHeight])
+  }, [isDragging, x, y, canvasSize.width, canvasSize.height])
   
   // マウスダウン
   const handleMouseDown = useCallback(() => {
@@ -161,8 +190,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         ref={canvasRef}
         className={`infinite-canvas ${className}`}
         style={{
-          width: canvasWidth,
-          height: canvasHeight,
+          width: canvasSize.width,
+          height: canvasSize.height,
           x,
           y,
           scale,
@@ -175,9 +204,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         dragMomentum={false}
         dragElastic={0}
         dragConstraints={{
-          left: -(canvasWidth - window.innerWidth),
+          left: -(canvasSize.width - (typeof window !== 'undefined' ? window.innerWidth : 1200)),
           right: 0,
-          top: -(canvasHeight - window.innerHeight),
+          top: -(canvasSize.height - (typeof window !== 'undefined' ? window.innerHeight : 800)),
           bottom: 0
         }}
       >
