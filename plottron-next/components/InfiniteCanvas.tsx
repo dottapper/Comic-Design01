@@ -212,6 +212,69 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       >
         {/* 背景パターン */}
         <div className="canvas-background">
+          <div className="ascii-background">
+            <div className="ascii-pattern ascii-saturn">{`       ___
+    .-.     \`.
+   /   \     \\
+  |  O  |     |
+   \   /     /
+    \`-'     .'
+       ---`}</div>
+            
+            <div className="ascii-pattern ascii-stars">{`    *  .  *    .  *
+  .    *  .    *
+*  .  *    .  *    .
+  *    .  *  .    *
+.  *    .    *  .`}</div>
+
+            <div className="ascii-pattern ascii-rocket">{`    /\\
+   /  \\
+  |    |
+  | /\\ |
+  |/  \\|
+   \\  /
+    \\/
+   ||||
+  /_\\/_\\`}</div>
+
+            <div className="ascii-pattern ascii-earth">{`      .-.
+    .'   \`.
+   /  .-.  \\
+  |  /   \\  |
+   \\  \`-'  /
+    \`.___.'`}</div>
+
+            <div className="ascii-pattern ascii-tech">{`</>
+{0,1}
+[code]
+~/dev
+git++`}</div>
+
+            <div className="ascii-pattern ascii-code">{`function() {
+  return '42';
+}
+console.log();
+npm run dev`}</div>
+
+            <div className="ascii-pattern ascii-manga">{`  ◕   ◕
+    ᵕ
+  \\_____/
+   \\   /
+    | |
+   /   \\`}</div>
+
+            <div className="ascii-pattern ascii-comic">{`POW!
+ ┌─────┐
+ │ BAM │
+ └─────┘
+  ZOOM!`}</div>
+
+            <div className="ascii-pattern ascii-digital">{`0101010
+1010101
+ █▄▄█
+ ▀███▀
+  ▀█▀`}</div>
+          </div>
           <div className="grid-pattern" />
           <div className="floating-elements" />
         </div>

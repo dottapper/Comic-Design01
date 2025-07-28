@@ -5,9 +5,11 @@ import '@/styles/infinite-canvas.css'
 
 export default function Home() {
   return (
-    <main className="infinite-canvas-page">
+    <>
       <Header />
-      <InfiniteCanvas items={canvasData} />
-    </main>
+      <main className="infinite-canvas-page">
+        <InfiniteCanvas items={canvasData} />
+      </main>
+    </>
   )
 }
