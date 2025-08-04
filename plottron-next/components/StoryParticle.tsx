@@ -18,6 +18,7 @@ interface StoryParticleProps {
   total: number
   energyLevel: number
   accelerationMode: 'idle' | 'charging' | 'accelerating'
+  onClick?: (story: StoryParticleProps['item']) => void
 }
 
 const StoryParticle: React.FC<StoryParticleProps> = ({
@@ -26,27 +27,31 @@ const StoryParticle: React.FC<StoryParticleProps> = ({
   position,
   total,
   energyLevel,
-  accelerationMode
+  accelerationMode,
+  onClick
 }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isClicked, setIsClicked] = useState(false)
 
   const angle = (position * 360) / total
-  const radius = orbit === 1 ? 125 : orbit === 2 ? 200 : 275
+  const radius = orbit === 1 ? 140 : orbit === 2 ? 220 : 300
 
   const handleClick = () => {
-    setIsClicked(true)
-    // Animate particle acceleration toward center
-    setTimeout(() => {
-      // Here you would navigate to the story detail page
-      console.log('Accelerating to story:', item.title)
-    }, 800)
+    if (onClick) {
+      onClick(item)
+    } else {
+      setIsClicked(true)
+      // Animate particle acceleration toward center
+      setTimeout(() => {
+        console.log('Accelerating to story:', item.title)
+      }, 800)
+    }
   }
 
   const getParticleSize = () => {
-    if (orbit === 1) return 60 // Inner orbit - largest
-    if (orbit === 2) return 45 // Middle orbit - medium
-    return 35 // Outer orbit - smallest
+    if (orbit === 1) return 80 // Inner orbit - largest
+    if (orbit === 2) return 65 // Middle orbit - medium
+    return 50 // Outer orbit - smallest
   }
 
   const getEnergyColor = () => {
@@ -124,7 +129,8 @@ const StoryParticle: React.FC<StoryParticleProps> = ({
                      rotate(var(--angle)) 
                      translateX(var(--radius)) 
                      rotate(calc(-1 * var(--angle)))
-                     scale(1.2);
+                     scale(1.5);
+          z-index: 50;
         }
 
         .story-particle.accelerating-to-center {
@@ -305,19 +311,27 @@ const StoryParticle: React.FC<StoryParticleProps> = ({
 
         /* Mobile adjustments */
         @media (max-width: 768px) {
+          .story-particle:hover {
+            transform: translate(-50%, -50%) 
+                       rotate(var(--angle)) 
+                       translateX(var(--radius)) 
+                       rotate(calc(-1 * var(--angle)))
+                       scale(1.8);
+          }
+
           .particle-info {
-            font-size: 9px;
-            padding: 6px;
-            min-width: 100px;
+            font-size: 10px;
+            padding: 8px;
+            min-width: 120px;
           }
 
           .particle-info h4 {
-            font-size: 10px;
+            font-size: 11px;
           }
 
           .genre-tag {
-            font-size: 7px;
-            padding: 1px 3px;
+            font-size: 8px;
+            padding: 2px 4px;
           }
         }
       `}</style>

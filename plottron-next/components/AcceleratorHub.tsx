@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import StoryParticle from './StoryParticle'
 import EnergyMeter from './EnergyMeter'
+import StoryDetailModal from './StoryDetailModal'
+import SearchBar from './SearchBar'
 
 interface AcceleratorHubProps {
   items: Array<{
@@ -20,6 +22,14 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
   const [energyLevel, setEnergyLevel] = useState(0)
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
   const [accelerationMode, setAccelerationMode] = useState<'idle' | 'charging' | 'accelerating'>('idle')
+  const [selectedStory, setSelectedStory] = useState<typeof items[0] | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState({
+    genre: '',
+    rating: 0,
+    sortBy: 'rating' as 'rating' | 'title' | 'latest'
+  })
   const hubRef = useRef<HTMLDivElement>(null)
 
   const genres = ['Sci-Fi', 'Action', 'Mystery', 'Drama', 'Horror', 'Comedy', 'Fantasy']
@@ -40,16 +50,82 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
     setTimeout(() => setAccelerationMode('accelerating'), 1500)
   }
 
+  const handleStoryClick = (story: typeof items[0]) => {
+    setSelectedStory(story)
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    setSelectedStory(null)
+  }
+
+  const handleReadStory = (storyId: string) => {
+    // TODO: Navigate to reading interface
+    console.log('Reading story:', storyId)
+    // Here you would implement navigation to the reading page
+  }
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query)
+  }
+
+  const handleFilterChange = (newFilters: {
+    genre?: string
+    rating?: number
+    sortBy?: 'rating' | 'title' | 'latest'
+  }) => {
+    setFilters(prev => ({ ...prev, ...newFilters }))
+  }
+
+  const getFilteredItems = () => {
+    let filtered = items
+
+    // Apply search query
+    if (searchQuery) {
+      filtered = filtered.filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    }
+
+    // Apply genre filter (prioritize search bar filter over genre injector)
+    const activeGenre = filters.genre || selectedGenre
+    if (activeGenre) {
+      filtered = filtered.filter(item => item.genre.includes(activeGenre))
+    }
+
+    // Apply rating filter
+    if (filters.rating > 0) {
+      filtered = filtered.filter(item => item.rating >= filters.rating)
+    }
+
+    // Apply sorting
+    switch (filters.sortBy) {
+      case 'title':
+        filtered = filtered.sort((a, b) => a.title.localeCompare(b.title))
+        break
+      case 'latest':
+        // Assuming newer items have higher IDs
+        filtered = filtered.sort((a, b) => b.id.localeCompare(a.id))
+        break
+      case 'rating':
+      default:
+        filtered = filtered.sort((a, b) => b.rating - a.rating)
+        break
+    }
+
+    return filtered
+  }
+
   const getParticlesByOrbit = (orbitLevel: number) => {
-    const filteredItems = selectedGenre 
-      ? items.filter(item => item.genre.includes(selectedGenre))
-      : items
+    const filteredItems = getFilteredItems()
 
     switch (orbitLevel) {
-      case 1: // Inner orbit - highest rated
-        return filteredItems
-          .sort((a, b) => b.rating - a.rating)
-          .slice(0, 3)
+      case 1: // Inner orbit - highest priority
+        return filteredItems.slice(0, 3)
       case 2: // Middle orbit - recommended
         return filteredItems.slice(3, 9)
       case 3: // Outer orbit - all others
@@ -61,6 +137,13 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
 
   return (
     <div className="accelerator-hub" ref={hubRef}>
+      {/* Search Bar */}
+      <SearchBar
+        onSearch={handleSearch}
+        onFilterChange={handleFilterChange}
+        isActive={accelerationMode !== 'idle'}
+      />
+
       <div className="accelerator-container">
         
         {/* Central Core */}
@@ -108,6 +191,7 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
                 total={getParticlesByOrbit(orbit).length}
                 energyLevel={energyLevel}
                 accelerationMode={accelerationMode}
+                onClick={handleStoryClick}
               />
             ))}
           </div>
@@ -145,6 +229,14 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
             </div>
           )}
         </div>
+
+        {/* Story Detail Modal */}
+        <StoryDetailModal
+          story={selectedStory}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onRead={handleReadStory}
+        />
       </div>
 
       <style jsx>{`
@@ -251,22 +343,22 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
         }
 
         .orbit-1 {
-          width: 250px;
-          height: 250px;
+          width: 280px;
+          height: 280px;
           border-color: rgba(255, 107, 53, 0.4);
           animation: rotate 20s linear infinite;
         }
 
         .orbit-2 {
-          width: 400px;
-          height: 400px;
+          width: 440px;
+          height: 440px;
           border-color: rgba(0, 255, 255, 0.3);
           animation: rotate 30s linear infinite;
         }
 
         .orbit-3 {
-          width: 550px;
-          height: 550px;
+          width: 600px;
+          height: 600px;
           border-color: rgba(147, 51, 234, 0.3);
           animation: rotate 40s linear infinite;
         }
@@ -378,9 +470,9 @@ const AcceleratorHub: React.FC<AcceleratorHubProps> = ({ items }) => {
             font-size: 8px;
           }
 
-          .orbit-1 { width: 200px; height: 200px; }
-          .orbit-2 { width: 320px; height: 320px; }
-          .orbit-3 { width: 440px; height: 440px; }
+          .orbit-1 { width: 240px; height: 240px; }
+          .orbit-2 { width: 380px; height: 380px; }
+          .orbit-3 { width: 520px; height: 520px; }
 
           .info-panel {
             bottom: -80px;
