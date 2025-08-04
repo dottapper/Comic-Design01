@@ -6,7 +6,7 @@
 import React from 'react'
 
 interface DynamicASCIIBackgroundProps {
-  config?: any
+  config?: Record<string, unknown>
   className?: string
   style?: React.CSSProperties
 }
