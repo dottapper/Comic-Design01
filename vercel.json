@@ -1,6 +1,5 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "rootDirectory": "plottron-next"
+  "buildCommand": "cd plottron-next && npm install && npm run build",
+  "outputDirectory": "plottron-next/.next",
+  "installCommand": "npm install --prefix plottron-next"
 }
