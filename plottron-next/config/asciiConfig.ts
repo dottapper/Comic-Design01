@@ -1,5 +1,5 @@
 // ASCII Background Configuration
-export interface ASCIIBackgroundConfig {
+export interface ASCIIBackgroundConfig extends Record<string, unknown> {
   pattern: 'perlin' | 'rain' | 'wave' | 'matrix'
   characters?: string[]
   color?: string
