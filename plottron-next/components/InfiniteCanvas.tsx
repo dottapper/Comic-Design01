@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { motion, useMotionValue, PanInfo } from 'framer-motion'
+import DynamicASCIIBackground from './DynamicASCIIBackground'
+import { PLOTTRON_ASCII_CONFIG, getResponsiveASCIIConfig } from '@/config/asciiConfig'
 import { 
   CanvasItem, 
   calculateCardSize, 
@@ -26,6 +28,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   const [selectedItem, setSelectedItem] = useState<CanvasItem | null>(null)
   const [canvasSize, setCanvasSize] = useState({ width: 4000, height: 3000 })
   const [deviceType, setDeviceType] = useState<string>('desktop')
+  const [asciiConfig, setAsciiConfig] = useState(PLOTTRON_ASCII_CONFIG)
   
   // パン用のモーション値
   const x = useMotionValue(0)
@@ -39,8 +42,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     const updateCanvasSize = () => {
       const newSize = getResponsiveCanvasSize()
       const newDeviceType = getDeviceType()
+      const viewport = getViewportDimensions()
+      
       setCanvasSize(newSize)
       setDeviceType(newDeviceType)
+      
+      // Update ASCII config based on screen size
+      const responsiveConfig = getResponsiveASCIIConfig(PLOTTRON_ASCII_CONFIG, viewport.width)
+      setAsciiConfig(responsiveConfig)
     }
     
     updateCanvasSize()
@@ -185,6 +194,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   return (
     <div className="infinite-canvas-container">
+      {/* 動的ASCII背景 */}
+      <DynamicASCIIBackground 
+        config={asciiConfig}
+        className="canvas-ascii-background"
+      />
+      
       {/* 無限キャンバス */}
       <motion.div
         ref={canvasRef}
@@ -210,71 +225,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           bottom: 0
         }}
       >
-        {/* 背景パターン */}
+        {/* 背景パターン - 新しい動的ASCII背景 */}
         <div className="canvas-background">
-          <div className="ascii-background">
-            <div className="ascii-pattern ascii-saturn">{`       ___
-    .-.     \`.
-   /   \     \\
-  |  O  |     |
-   \   /     /
-    \`-'     .'
-       ---`}</div>
-            
-            <div className="ascii-pattern ascii-stars">{`    *  .  *    .  *
-  .    *  .    *
-*  .  *    .  *    .
-  *    .  *  .    *
-.  *    .    *  .`}</div>
-
-            <div className="ascii-pattern ascii-rocket">{`    /\\
-   /  \\
-  |    |
-  | /\\ |
-  |/  \\|
-   \\  /
-    \\/
-   ||||
-  /_\\/_\\`}</div>
-
-            <div className="ascii-pattern ascii-earth">{`      .-.
-    .'   \`.
-   /  .-.  \\
-  |  /   \\  |
-   \\  \`-'  /
-    \`.___.'`}</div>
-
-            <div className="ascii-pattern ascii-tech">{`</>
-{0,1}
-[code]
-~/dev
-git++`}</div>
-
-            <div className="ascii-pattern ascii-code">{`function() {
-  return '42';
-}
-console.log();
-npm run dev`}</div>
-
-            <div className="ascii-pattern ascii-manga">{`  ◕   ◕
-    ᵕ
-  \\_____/
-   \\   /
-    | |
-   /   \\`}</div>
-
-            <div className="ascii-pattern ascii-comic">{`POW!
- ┌─────┐
- │ BAM │
- └─────┘
-  ZOOM!`}</div>
-
-            <div className="ascii-pattern ascii-digital">{`0101010
-1010101
- █▄▄█
- ▀███▀
-  ▀█▀`}</div>
-          </div>
           <div className="grid-pattern" />
           <div className="floating-elements" />
         </div>

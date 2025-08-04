@@ -6,7 +6,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #FAF8F5;
+  background: #f4f4ee;
   cursor: grab;
 }
 
@@ -91,7 +91,7 @@
 
 .canvas-item:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  border-color: var(--color-primary);
+  border-color: #B84DFF;
   z-index: 10;
   transform: scale(1.05) rotate(0deg);
 }
@@ -211,7 +211,7 @@
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #B84DFF;
   margin: 0;
   letter-spacing: 0.1em;
 }
@@ -725,102 +725,34 @@
   outline-offset: 2px;
 } 
 
-.ascii-background {
-  position: absolute;
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%;
+/* 動的ASCII背景用のスタイル */
+.canvas-ascii-background {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -2 !important; /* 背景として最下層に配置 */
+  pointer-events: none !important;
+  opacity: 0.25;
+  background: transparent;
+}
+
+.ascii-background-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
   pointer-events: none;
-  z-index: 1;
-  opacity: 0.6;
-  font-family: 'Courier New', 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  font-size: 14px;
-  line-height: 1.2;
-  color: var(--color-neutral-400);
-  overflow: hidden;
+  background: transparent;
 }
 
-.ascii-pattern {
-  position: absolute;
-  white-space: pre;
-  animation: float 20s ease-in-out infinite;
-}
-
-.ascii-pattern:nth-child(odd) {
-  animation-delay: -10s;
-}
-
-.ascii-saturn {
-  left: 15%;
-  top: 20%;
-  font-size: 16px;
-  color: #1B0D2D;
-}
-
-.ascii-stars {
-  right: 20%;
-  top: 15%;
-  font-size: 12px;
-  color: #1B0D2D;
-}
-
-.ascii-rocket {
-  left: 70%;
-  top: 60%;
-  font-size: 18px;
-  color: #1B0D2D;
-}
-
-.ascii-earth {
-  right: 10%;
-  bottom: 30%;
-  font-size: 20px;
-  color: #1B0D2D;
-}
-
-.ascii-tech {
-  left: 5%;
-  bottom: 15%;
-  font-size: 10px;
-  color: #1B0D2D;
-}
-
-.ascii-code {
-  right: 60%;
-  bottom: 10%;
-  font-size: 11px;
-  color: #1B0D2D;
-}
-
-.ascii-manga {
-  left: 40%;
-  top: 40%;
-  font-size: 12px;
-  color: #1B0D2D;
-}
-
-.ascii-comic {
-  right: 40%;
-  top: 70%;
-  font-size: 14px;
-  color: #1B0D2D;
-}
-
-.ascii-digital {
-  left: 80%;
-  bottom: 40%;
-  font-size: 13px;
-  color: #1B0D2D;
-}
-
-@keyframes float {
-  0%, 100% { 
-    transform: translateY(0px) translateX(0px); 
-    opacity: 0.4;
-  }
-  50% { 
-    transform: translateY(-10px) translateX(5px); 
-    opacity: 0.6;
-  }
+/* パフォーマンス最適化 */
+.canvas-ascii-background,
+.ascii-background-canvas {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 } 
