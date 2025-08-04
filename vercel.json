@@ -4,10 +4,5 @@
       "source": "/(.*)",
       "destination": "/plottron-next/$1"
     }
-  ],
-  "functions": {
-    "plottron-next/app/**/*.tsx": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  ]
 } 
