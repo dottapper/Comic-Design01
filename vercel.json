@@ -1,8 +1,6 @@
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/plottron-next/$1"
-    }
-  ]
+  "buildCommand": "cd plottron-next && npm run build",
+  "outputDirectory": "plottron-next/out",
+  "installCommand": "cd plottron-next && npm install",
+  "framework": "nextjs"
 } 
