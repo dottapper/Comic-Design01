@@ -24,6 +24,8 @@
   - 型定義（共有の TypeScript 型）。
 - `public/`
   - 画像/フォント/静的ファイル。用途別にサブフォルダを切る（例: `hero/`, `logos/`, `icons/`）。
+- リポジトリ直下 `original-assets/`
+  - 最適化前の原本データ置き場（納品元・撮って出し等）。ここから最適化して `plottron-next/public/` へ投入する。
 
 パスエイリアス（`@/components/` 等）は `tsconfig.json` に設定済み。`import` は相対ではなくエイリアスを推奨。
 
@@ -37,9 +39,10 @@
 ## 3. よくある更新の手順
 
 - 画像の差し替え
-  1. `public/hero/` 等に画像を追加
-  2. 該当データ（例: `data/canvasData.ts`）のパスを更新
-  3. UI コンポーネントの `img`/`Image` の参照を確認
+  1. `original-assets/` に原本を保存
+  2. 必要に応じて最適化（形式/サイズ）して `public/` に配置
+  3. 該当データ（例: `data/canvasData.ts`）のパスを更新
+  4. UI コンポーネントの `img`/`Image` の参照を確認
 
 - カードの追加/削除
   1. `data/` の配列に項目を追加/削除

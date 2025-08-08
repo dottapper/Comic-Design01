@@ -17,7 +17,7 @@ comic-site-Design01/
 │   └── main.css           # メインCSSファイル
 ├── scripts/
 │   └── main.js            # メインJavaScriptファイル
-├── images/                # Hero画像（7枚）
+├── original-assets/       # 最適化前の原本画像（保管用）
 │   ├── main01.png
 │   ├── main02.png
 │   ├── main03.png
@@ -87,7 +87,7 @@ comic-site-Design01/
 
 ### 画像の追加・変更
 
-`images/`フォルダに画像を追加し、`index.html`の`hero-gallery`セクションを更新
+`original-assets/`フォルダに原本を保管し、最適化版を`plottron-next/public/`配下へ配置して参照
 
 ### アニメーションの調整
 
