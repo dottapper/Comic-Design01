@@ -93,3 +93,150 @@ export function SectionTemplate({ title, children }: SectionTemplateProps) {
 ```
 
 このテンプレに沿って、セクション単位で追加していくと構造の一貫性を保てます。
+
+## 8. トップページ構造詳細（AcceleratorHub）
+
+### 8.1 ページ構成
+```
+app/page.tsx
+├── Header.tsx (固定ヘッダー)
+└── AcceleratorHub.tsx (メインUI - 円形加速器)
+    ├── SearchBar.tsx (検索・フィルタ)
+    ├── EnergyMeter.tsx (エネルギーゲージ)
+    ├── StoryParticle.tsx (リング上の作品アイテム)
+    └── StoryDetailModal.tsx (作品詳細モーダル)
+```
+
+### 8.2 主要コンポーネントの役割
+
+#### `AcceleratorHub.tsx` (メインUI)
+- **中央コア**: ロゴ + 発光エフェクト
+- **エネルギーメーター**: 充電・加速状態の円形ゲージ
+- **ジャンル・インジェクタ**: 円周上のジャンルボタン（7個）
+- **オービット**: 3つのリング（内・中・外）に作品を配置
+- **フィルタリング**: 検索・ジャンル・評価・ソート機能内蔵
+- **状態管理**: `energyLevel`, `accelerationMode`, `selectedGenre` など
+
+#### `Header.tsx` (固定ヘッダー)
+- **ロゴ**: PLOTTRON + タグライン
+- **ナビゲーション**: "Accelerate Discovery", "My Collection" ボタン
+- **パワーコントロール**: STANDBY/ACTIVE モード切替
+- **発光エフェクト**: ホバー時のエネルギー表示
+
+#### `StoryParticle.tsx` (作品アイテム)
+- **表示**: 円形の画像 + オーバーレイ情報
+- **ホバー**: タイトル・著者・評価・ジャンル表示
+- **クリック**: 詳細モーダルを開く
+- **アニメーション**: エネルギー残量に応じた発光
+
+#### `SearchBar.tsx` (検索・フィルタ)
+- **展開式UI**: ボタンクリックで検索パネル表示
+- **検索機能**: タイトル・著者・説明・ジャンルから検索
+- **フィルタ**: ジャンル選択・最小評価・ソート順
+- **リアルタイム**: 入力と同時にフィルタ適用
+
+#### `StoryDetailModal.tsx` (詳細モーダル)
+- **表示**: 画像 + 詳細情報（タイトル・著者・説明・評価・ジャンル）
+- **アクション**: "Accelerate Reading", "Add to Collection", "Share Energy"
+- **閉じる**: Esc キー・背景クリック・×ボタン
+- **アニメーション**: フェードイン・スライドイン
+
+#### `EnergyMeter.tsx` (エネルギーゲージ)
+- **表示**: 円形プログレスバー + パーセンテージ
+- **モード**: idle/charging/accelerating の状態表示
+- **アニメーション**: パルス・スパーク・回転エフェクト
+
+### 8.3 データ構造
+
+#### `data/canvasData.ts`
+```typescript
+interface CanvasItem {
+  id: string
+  title: string
+  coverImage: string
+  author: string
+  genre: string[]
+  description: string
+  rating: number
+  status: 'ongoing' | 'completed' | 'hiatus'
+  x: number, y: number
+  size: 'small' | 'medium' | 'large'
+  rotation: number
+  imageWidth: number, imageHeight: number
+}
+```
+
+### 8.4 よく触る変更ポイント
+
+#### 作品データの追加・編集
+- **ファイル**: `data/canvasData.ts`
+- **項目**: タイトル・著者・ジャンル・説明・評価・画像パス
+- **画像**: `public/hero/` に配置、パスを `coverImage` に設定
+
+#### ジャンルの変更
+- **ファイル**: `components/AcceleratorHub.tsx`
+- **箇所**: `genres` 配列（7個のジャンルボタン）
+- **影響**: インジェクタの配置・フィルタ機能
+
+#### ヘッダーの文言・ロゴ
+- **ファイル**: `components/Header.tsx`
+- **箇所**: ロゴテキスト・タグライン・ナビボタン文言
+
+#### 検索・フィルタ機能
+- **ファイル**: `components/SearchBar.tsx` + `AcceleratorHub.tsx`
+- **箇所**: 検索ロジック・フィルタ条件・ソート順
+
+#### モーダルの項目・見た目
+- **ファイル**: `components/StoryDetailModal.tsx`
+- **箇所**: 表示項目・ボタン文言・レイアウト
+
+#### 色・発光の全体トーン
+- **ファイル**: `app/globals.css`
+- **箇所**: CSS変数（`--energy-primary`, `--energy-secondary` など）
+
+### 8.5 未使用コンポーネント（別案UI）
+
+#### `InfiniteCanvas.tsx`
+- **機能**: ドラッグで広い平面に画像を散りばめる
+- **用途**: 別デザイン案（現状は AcceleratorHub がメイン）
+- **差し替え**: `app/page.tsx` で `AcceleratorHub` → `InfiniteCanvas` へ変更可能
+
+#### `DynamicASCIIBackground.tsx`
+- **機能**: 動的ASCII背景（InfiniteCanvas 用）
+- **用途**: 別デザイン案の背景エフェクト
+
+### 8.6 レスポンシブ対応
+
+#### ブレークポイント
+- **モバイル**: 480px以下（1列グリッド）
+- **タブレット**: 768px以下（2列グリッド）
+- **デスクトップ**: 1024px以上（3列グリッド）
+
+#### デバイス別調整
+- **画像サイズ**: モバイルで縮小、PCで拡大
+- **レイアウト**: グリッド列数・余白・フォントサイズ
+- **インタラクション**: タッチ対応・ホバー無効化
+
+### 8.7 パフォーマンス最適化
+
+#### 画像最適化
+- **Next.js Image**: 自動最適化・遅延読み込み
+- **プレースホルダー**: ぼかし効果付き
+- **サイズ調整**: デバイス別の最適サイズ
+
+#### アニメーション
+- **GPU加速**: `transform`, `opacity` を優先
+- **will-change**: 必要な要素のみ指定
+- **reduced-motion**: アクセシビリティ対応
+
+### 8.8 アクセシビリティ
+
+#### キーボード操作
+- **フォーカス**: タブ順序・フォーカスリング
+- **ショートカット**: Esc（モーダル閉じる）
+- **スクリーンリーダー**: aria-label・role 属性
+
+#### 色・コントラスト
+- **高コントラスト**: `prefers-contrast: high` 対応
+- **色覚異常**: 色だけでなく形状でも情報提供
+- **フォーカス**: 視認可能なフォーカスリング
